@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEB SHARE DẠO - PREMIUM UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- KHỞI TẠO BIẾN MÀU & ĐỊNH DẠNG CHUNG --- */
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.3);
+            --accent: #f43f5e;
+            --bg: #030712;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-card: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { 
+            background: var(--bg); 
+            background-image: 
+                radial-gradient(circle at 50% -20%, #312e81, transparent 50%), 
+                radial-gradient(circle at 0% 100%, #1e1b4b, transparent 50%);
+            color: #f8fafc; 
+            min-height: 100vh; 
+            overflow-x: hidden;
+        }
+
+        /* --- 1. POPUP THÔNG BÁO BAN ĐẦU --- */
+        #notification-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            display: flex; justify-content: center; align-items: center; z-index: 9999;
+        }
+        .noti-box {
+            background: rgba(15, 23, 42, 0.9); border: 1px solid var(--primary);
+            border-radius: 24px; padding: 35px; width: 90%; max-width: 480px; text-align: center;
+            box-shadow: 0 0 50px var(--primary-glow); animation: scaleUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        .noti-bell { font-size: 55px; color: #fbbf24; animation: ring 1.5s infinite; margin-bottom: 10px; display: inline-block;}
+        .noti-box h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px;}
+        .noti-box h3 { color: var(--accent); font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;}
+        .noti-rules { font-size: 14px; color: #94a3b8; line-height: 1.6; text-align: left; background: rgba(255,255,255,0.02); padding: 18px; border-radius: 16px; border: 1px solid var(--glass-border); margin-bottom: 20px;}
+        .close-noti-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #64748b; font-size: 20px; cursor: pointer; transition: 0.2s; }
+        .close-noti-btn:hover { color: var(--accent); transform: scale(1.1); }
+        .agree-btn { background: var(--primary); color: white; border: none; padding: 12px 35px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s; box-shadow: 0 8px 20px rgba(99,102,241,0.3); }
+        .agree-btn:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 8px 25px rgba(99,102,241,0.5); }
+
+        /* --- 2. GIAO DIỆN CHÍNH (HEADER) --- */
+        header { padding: 40px 20px; text-align: center; position: relative; }
+        .user-status-bar { position: absolute; top: 30px; left: 30px; display: flex; align-items: center; gap: 10px; }
+        .login-btn { background: rgba(37, 99, 235, 0.15); border: 1px solid #3b82f6; padding: 10px 20px; border-radius: 14px; color: #60a5fa; cursor: pointer; font-weight: 700; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .login-btn:hover { background: #3b82f6; color: white; box-shadow: 0 0 15px rgba(59,130,246,0.4); }
+        
+        .user-greeting { display: none; align-items: center; gap: 12px; background: rgba(16, 185, 129, 0.1); padding: 8px 16px; border-radius: 14px; border: 1px solid rgba(16,185,129,0.2); font-weight: 600; color: #10b981; }
+        .logout-btn { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 16px; margin-left: 5px; transition: 0.2s;}
+        .logout-btn:hover { transform: scale(1.1); }
+
+        .header-title { font-size: clamp(28px, 4vw, 44px); font-weight: 800; background: linear-gradient(to right, #ffffff, #93c5fd, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+        .header-sub { font-size: 16px; color: #94a3b8; margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        .firework-icon { display: inline-block; animation: bounce 1s infinite alternate; }
+
+        /* --- 3. BỐ CỤC CHÍNH (GRID & SIDEBAR) --- */
+        .container { max-width: 1280px; margin: 40px auto; padding: 0 24px; display: grid; grid-template-columns: 1fr 340px; gap: 35px; margin-bottom: 140px; }
+        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } .user-status-bar { position: static; justify-content: center; margin-bottom: 20px; } }
+
+        /* Danh sách Card tài nguyên */
+        .grid-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 25px; }
+        .card { 
+            background: var(--glass-card); border: 1px solid var(--glass-border); border-radius: 20px; 
+            overflow: hidden; transition: 0.4s cubic-bezier(0.25, 1, 0.5, 1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; height: 100%;
+        }
+        .card:hover { transform: translateY(-8px); border-color: var(--primary); box-shadow: 0 20px 30px rgba(0,0,0,0.3), 0 0 20px rgba(99,102,241,0.15); }
+        
+        .card-img-wrapper { height: 170px; width: 100%; overflow: hidden; position: relative; background: #1e293b;}
+        .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s ease; }
+        .card:hover .card-img-wrapper img { transform: scale(1.08); }
+        
+        .card-body { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
+        .card-tag { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #818cf8; font-weight: 700; margin-bottom: 6px; }
+        .card-title { font-size: 17px; font-weight: 700; line-height: 1.4; margin-bottom: 10px; color: #f1f5f9; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 48px;}
+        .card-author { font-size: 13px; color: #64748b; margin-bottom: 20px; display: flex; align-items: center; gap: 6px; margin-top: auto;}
+        
+        /* Chỉnh sửa nút tải xuống thành dạng button để bắt sự kiện click kiểm tra đăng nhập */
+        .download-btn { display: flex; width: 100%; border: none; outline: none; cursor: pointer; align-items: center; justify-content: center; gap: 8px; background: #ffffff; color: #0f172a; padding: 11px; border-radius: 12px; font-weight: 700; font-size: 14px; transition: 0.2s; }
+        .download-btn:hover { background: var(--primary); color: #ffffff; }
+
+        /* Sidebar Góc Sẻ Chia */
+        .sidebar-share { 
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.07), rgba(244, 63, 94, 0.07));
+            border-radius: 24px; padding: 30px; border: 1px solid var(--glass-border); text-align: center;
+            position: sticky; top: 30px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        }
+        .share-icon-circle { width: 64px; height: 64px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 26px; box-shadow: 0 0 25px rgba(99,102,241,0.4); }
+        .share-btn { 
+            width: 100%; background: #ffffff; color: #0f172a; border: none; padding: 14px; border-radius: 16px;
+            font-size: 16px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
+        }
+        .share-btn:hover { background: var(--accent); color: #ffffff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(244,63,94,0.3); }
+
+        /* --- 4. POPUP MODALS CHUNG (ĐĂNG NHẬP, UPLOAD) --- */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: #0f172a; border: 1px solid var(--glass-border); padding: 32px; border-radius: 24px; width: 92%; max-width: 440px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .modal-content h3 { font-size: 22px; font-weight: 800; margin-bottom: 20px; text-align: center; color: #f8fafc;}
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #94a3b8; margin-bottom: 6px; }
+        .form-group input, .form-group select { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); padding: 12px 16px; border-radius: 12px; color: white; outline: none; transition: 0.2s; font-size: 14px;}
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
+        .submit-btn { width: 100%; padding: 13px; border-radius: 12px; border: none; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; }
+
+        /* --- 5. GIAO DIỆN FORM ADMIN (GIỮ NGUYÊN HOÀN TOÀN CƠ CẤU) --- */
+        .admin-modal-content { max-width: 850px !important; width: 95%; background: #090d16 !important; border: 2px solid #a855f7 !important; max-height: 85vh; overflow-y: auto;}
+        .admin-nav { display: flex; gap: 10px; border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 20px;}
+        .admin-tab { background: #1e293b; border: none; color: white; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s;}
+        .admin-tab.active { background: #a855f7; box-shadow: 0 0 15px rgba(168,85,247,0.4); }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px;}
+        .admin-table th, .admin-table td { padding: 12px; border: 1px solid #1e293b; text-align: left; }
+        .admin-table th { background: #111827; color: #a855f7; font-weight: 700;}
+        .ban-btn { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: 600;}
+        .del-btn { background: #f97316; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: 600;}
+
+        /* --- 6. BANNER CHỮ CHẠY (FOOTER) --- */
+        .marquee-footer {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: #090d16;
+            border-top: 1px solid var(--glass-border); padding: 12px 0; z-index: 1000; overflow: hidden;
+        }
+        .marquee-content {
+            display: inline-block; white-space: nowrap; padding-left: 100%;
+            animation: marquee 25s linear infinite; font-weight: 700; color: #38bdf8; font-size: 15px;
+        }
+
+        /* --- 7. NÚT LIÊN HỆ ĐA NĂNG ĐANG CHUYỂN ĐỘNG --- */
+        .contact-wrapper { position: fixed; bottom: 65px; right: 25px; z-index: 1001; }
+        .phone-main-btn {
+            width: 54px; height: 54px; background: #10b981; border-radius: 16px; display: flex;
+            justify-content: center; align-items: center; color: white; font-size: 22px; cursor: pointer;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); animation: shake 0.5s infinite alternate;
+        }
+        .sub-contact-icons {
+            display: none; flex-direction: column; gap: 10px; position: absolute; bottom: 65px; right: 3px;
+            animation: slideInUp 0.3s forwards;
+        }
+        .sub-contact-icons a {
+            width: 48px; height: 48px; border-radius: 14px; display: flex; justify-content: center;
+            align-items: center; color: white; text-decoration: none; font-size: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .fb-btn { background: #1877f2; } .zalo-btn { background: #0068ff; font-weight: 800; font-size: 13px !important;} .tt-btn { background: #000000; border: 1px solid rgba(255,255,255,0.2);}
+
+        /* --- CÁC HIỆU ỨNG CHUYỂN ĐỘNG (ANIMATIONS) --- */
+        @keyframes scaleUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes ring { 0%, 100% { transform: rotate(0); } 10%, 30% { transform: rotate(12deg); } 20%, 40% { transform: rotate(-12deg); } 50% { transform: rotate(0); } }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-6px); } }
+        @keyframes marquee { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+        @keyframes shake { from { transform: rotate(-8deg) scale(1); } to { transform: rotate(8deg) scale(1.05); } }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="notification-overlay">
+        <div class="noti-box">
+            <button class="close-noti-btn" onclick="closeNotification()"><i class="fas fa-times"></i></button>
+            <i class="fas fa-bell noti-bell"></i>
+            <h2>WEB SHARE DẠO</h2>
+            <h3>ADMIN PHUC LOC</h3>
+            <div class="noti-rules">
+                <strong>Điều khoản:</strong> Không share link bậy nếu share link bậy sẽ không được upload. Cảm ơn mọi người!
+            </div>
+            <button class="agree-btn" onclick="closeNotification()">Tôi đã hiểu</button>
+        </div>
+    </div>
+
+    <header>
+        <div class="user-status-bar">
+            <button id="btn-login-trigger" class="login-btn" onclick="openModal('login-modal')">
+                <i class="fas fa-key"></i> Đăng Nhập
+            </button>
+            <div id="user-logged-info" class="user-greeting">
+                <span id="txt-greeting-name"></span>
+                <button class="logout-btn" onclick="handleLogout()" title="Đăng xuất"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+        <h1 class="header-title">WEB SHARE DẠO CÙNG PHUCLOC</h1>
+        <p class="header-sub">Chào mừng mọi người <span class="firework-icon">🎆✨🎇</span></p>
+    </header>
+
+    <div class="container">
+        <main class="main-content">
+            <div class="grid-items" id="items-container">
+                <div class="card">
+                    <div class="card-img-wrapper"><img src="https://vectorseek.com/wp-content/uploads/2023/07/capcut-png-icon.png" alt="Mẫu 1"></div>
+                    <div class="card-body">
+                        <span class="card-tag">Links</span>
+                        <div class="card-title">CAPCUT FREE CHO PC</div>
+                        <div class="card-author"><i class="fas fa-user-shield"></i> Admin Phuc Loc</div>
+                        <button onclick="secureDownload('https://drive.google.com/file/d/1Av8ktGM7OiT24VDjvA06d7uLQpnzHbAt/view')" class="download-btn">Lấy Link Tại Đây <i class="fas fa-download"></i></button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-img-wrapper"><img src="https://tse3.mm.bing.net/th/id/OIP.MVREUvZlSNqn3YAO-qbgUQHaEJ?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Mẫu 2"></div>
+                    <div class="card-body">
+                        <span class="card-tag">Links</span>
+                        <div class="card-title">Link Azota Câu hỏi CNXHKH Cho Sv Đại Học</div>
+                        <div class="card-author"><i class="fas fa-user-shield"></i> Admin Phuc Loc</div>
+                        <button onclick="secureDownload('https://docs.google.com/document/u/0/d/1zRhYYISloDGwkG7O4O0GB_tghs0pUAYd/mobilebasic?fbclid=IwQ0xDSwL3zIJleHRuA2FlbQIxMAABHtYhb2r0LpDJgVroLBnYUdeaIBi1e8-TNeepEVSmA_UfLQpKHLZakcMGVYv0_aem_kkR0b9BwYH8w3-L9cdxqdw&pli=1')" class="download-btn">Lấy Link Tại Đây <i class="fas fa-folder-open"></i></button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-img-wrapper"><img src="https://picsum.photos/400/250?random=3" alt="Mẫu 3"></div>
+                    <div class="card-body">
+                        <span class="card-tag">File</span>
+                        <div class="card-title">File Cấu Hình Tối Ưu Hóa Server Giúp Website Chạy Mượt Mà 100%</div>
+                        <div class="card-author"><i class="fas fa-user-shield"></i> Admin Phuc Loc</div>
+                        <button onclick="secureDownload('https://google.com')" class="download-btn">Tải File <i class="fas fa-file-code"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <aside class="sidebar">
+            <div class="sidebar-share">
+                <div class="share-icon-circle"><i class="fas fa-paper-plane"></i></div>
+                <h4 style="font-size: 18px; margin-bottom: 8px; font-weight: 700;">Góc Sẻ Chia</h4>
+                <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Đóng góp file, folder hoặc link hữu ích của bạn lên đây</p>
+                <button class="share-btn" style="background: #ef4444; color: white;" onclick="secureOpenUpload()">
+                    Góc Sẻ Chia <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <div id="login-modal" class="modal" onclick="closeModalOnOutsideClick(event, 'login-modal')">
+        <div class="modal-content">
+            <button class="close-noti-btn" onclick="closeModal('login-modal')"><i class="fas fa-times"></i></button>
+            <h3>Đăng Nhập Thành Viên / Admin</h3>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Tài Khoản</label>
+                    <input type="text" id="login-username" required placeholder="Nhập tài khoản tự do...">
+                </div>
+                <div class="form-group">
+                    <label>Mật Khẩu</label>
+                    <input type="password" id="login-password" required placeholder="Nhập mật khẩu...">
+                </div>
+                <button type="submit" class="submit-btn" style="background: #3b82f6; color: white;">Xác Nhận Đăng Nhập</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="upload-modal" class="modal" onclick="closeModalOnOutsideClick(event, 'upload-modal')">
+        <div class="modal-content">
+            <button class="close-noti-btn" onclick="closeModal('upload-modal')"><i class="fas fa-times"></i></button>
+            <h3>Chia Sẻ Lên Cộng Đồng</h3>
+            <form id="upload-form" onsubmit="handleUpload(event)">
+                <div class="form-group">
+                    <label>Tiêu đề bài viết (Tên link/file/folder)</label>
+                    <input type="text" id="up-title" required placeholder="Ví dụ: Source code web cá nhân VIP...">
+                </div>
+                <div class="form-group">
+                    <label>Đường dẫn hình ảnh minh họa (URL Ảnh)</label>
+                    <input type="url" id="up-img" placeholder="Dán link ảnh giúp mọi người biết đó là gì...">
+                </div>
+                <div class="form-group">
+                    <label>Đường dẫn tải file / folder / link</label>
+                    <input type="url" id="up-link" required placeholder="https://drive.google.com/... hoặc github">
+                </div>
+                <div class="form-group">
+                    <label>Loại định dạng</label>
+                    <select id="up-type">
+                        <option value="Source Code">Source Code</option>
+                        <option value="Folder">Folder / Thư mục</option>
+                        <option value="File">File tài liệu</option>
+                        <option value="Liên kết">Đường dẫn / Link</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn" style="background: #ef4444; color: white;">Tải Lên Hệ Thống</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="admin-modal" class="modal">
+        <div class="modal-content admin-modal-content">
+            <button class="close-noti-btn" onclick="closeModal('admin-modal')"><i class="fas fa-times"></i></button>
+            <h2 style="color: #a855f7; margin-bottom: 20px; font-weight: 800;"><i class="fas fa-user-shield"></i> PANEL QUẢN TRỊ ADMIN PHÚC LỘC</h2>
+            
+            <div class="admin-nav">
+                <button class="admin-tab active" onclick="switchAdminTab('tab-links')">Quản Lý Bài Đăng</button>
+                <button class="admin-tab" onclick="switchAdminTab('tab-users')">Quản Lý Thành Viên</button>
+                <button class="admin-tab" onclick="switchAdminTab('tab-settings')">Cấu Hình Banner</button>
+            </div>
+
+            <div id="tab-links" class="admin-panel-section">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Tên Link / File / Folder</th>
+                            <th>Đường Dẫn</th>
+                            <th>Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-links-tbody"></tbody>
+                </table>
+            </div>
+
+            <div id="tab-users" class="admin-panel-section" style="display:none;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Tên Tài Khoản</th>
+                            <th>Mật Khẩu Đã Lưu</th>
+                            <th>Trạng Thái</th>
+                            <th>Quyền Ban</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-users-tbody"></tbody>
+                </table>
+            </div>
+
+            <div id="tab-settings" class="admin-panel-section" style="display:none;">
+                <div class="form-group" style="margin-top:15px;">
+                    <label>Văn bản banner chữ chạy ngang qua liên tục</label>
+                    <input type="text" id="banner-text-input" style="background:#111827;">
+                </div>
+                <button class="submit-btn" style="background:#a855f7; width:auto; padding:10px 25px; color:white;" onclick="updateBannerText()">Cập Nhật Thay Đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="marquee-footer">
+        <div class="marquee-content" id="marquee-text">Chào mừng tới với WEBSITE SHARE DẠO CỦA PHÚC LỘC > CẢM ƠN MỌI NGƯỜI.</div>
+    </div>
+
+    <div class="contact-wrapper">
+        <div class="sub-contact-icons" id="sub-contacts">
+            <a href="https://www.facebook.com/share/1HcawLrZBp/?mibextid=wwXIfr" target="_blank" class="fb-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://zalo.me/0974377827" target="_blank" class="zalo-btn" title="Zalo">Zalo</a>
+            <a href="https://www.tiktok.com/@phloc_?_r=1&_t=ZS-97ub1WCRx5z" target="_blank" class="tt-btn" title="TikTok"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <div class="phone-main-btn" onclick="toggleContactMenu()">
+            <i class="fas fa-phone"></i>
+        </div>
+    </div>
+
+    <script>
+        let dbLinks = JSON.parse(localStorage.getItem('dbLinks')) || [];
+        let dbUsers = JSON.parse(localStorage.getItem('dbUsers')) || [];
+        let bannedUsers = JSON.parse(localStorage.getItem('bannedUsers')) || [];
+        let currentBannerText = localStorage.getItem('bannerText') || "Chào mừng tới với WEBSITE SHARE DẠO CỦA PHÚC LỘC > CẢM ƠN MỌI NGƯỜI.";
+
+        window.onload = function() {
+            document.getElementById('marquee-text').innerText = currentBannerText;
+            document.getElementById('banner-text-input').value = currentBannerText;
+            updateUserBarUI(); 
+            renderMainCards();
+        };
+
+        function closeNotification() { document.getElementById('notification-overlay').style.display = 'none'; }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function closeModalOnOutsideClick(e, id) { if(e.target.id === id) closeModal(id); }
+
+        function toggleContactMenu() {
+            const menu = document.getElementById('sub-contacts');
+            menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        // Cập nhật giao diện thanh tài khoản đăng nhập
+        function updateUserBarUI() {
+            const loggedUser = localStorage.getItem('activeUser');
+            const btnLogin = document.getElementById('btn-login-trigger');
+            const userInfoBox = document.getElementById('user-logged-info');
+            const txtName = document.getElementById('txt-greeting-name');
+
+            if(loggedUser) {
+                btnLogin.style.display = 'none';
+                userInfoBox.style.display = 'flex';
+                txtName.innerHTML = `<i class="fas fa-user-circle"></i> Chào, ${loggedUser}!`;
+            } else {
+                btnLogin.style.display = 'flex';
+                userInfoBox.style.display = 'none';
+            }
+        }
+
+        // ================= SECURITY FUNCTIONS (CẬP NHẬT BẢO MẬT) =================
+        
+        // Hàm bảo mật chặn người dùng tải xuống nếu chưa đăng nhập
+        function secureDownload(linkUrl) {
+            const isLogged = localStorage.getItem('activeUser');
+            if (!isLogged) {
+                alert("Hệ thống bảo mật: Bạn cần phải ĐĂNG NHẬP tài khoản trước thì mới có quyền tải tài nguyên này xuống!");
+                openModal('login-modal'); // Tự động bật bảng đăng nhập lên cho khách
+                return;
+            }
+            // Nếu đã đăng nhập thành công thì cho phép tải/mở liên kết bình thường ở tab mới
+            window.open(linkUrl, '_blank');
+        }
+
+        // Hàm bảo mật chặn người dùng mở form upload chia sẻ bài nếu chưa đăng nhập
+        function secureOpenUpload() {
+            const isLogged = localStorage.getItem('activeUser');
+            if (!isLogged) {
+                alert("Hệ thống bảo mật: Bạn cần đăng nhập tài khoản trước mới có quyền chia sẻ bài viết lên Góc Sẻ Chia!");
+                openModal('login-modal');
+                return;
+            }
+            openModal('upload-modal'); // Đã đăng nhập thì cho phép mở form điền bài đăng
+        }
+
+        // =========================================================================
+
+        // Xử lý đăng nhập thành viên hoặc tài khoản Admin riêng biệt
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('login-username').value.trim();
+            const pass = document.getElementById('login-password').value.trim();
+
+            if (user === 'adminfulow@83' && pass === '@Phucloc8327#') {
+                closeModal('login-modal');
+                openAdminDashboard();
+            } else {
+                if(bannedUsers.includes(user)){
+                    alert("Tài khoản của bạn đã bị ADMIN BAN VĨNH VIỄN khỏi hệ thống!");
+                    return;
+                }
+                if(!dbUsers.some(u => u.username === user)){
+                    dbUsers.push({username: user, password: pass});
+                    localStorage.setItem('dbUsers', JSON.stringify(dbUsers));
+                }
+                
+                localStorage.setItem('activeUser', user);
+                alert(`Đăng nhập thành công! Chào thành viên: ${user}`);
+                closeModal('login-modal');
+                updateUserBarUI();
+                renderMainCards(); // Load lại nút bấm để cập nhật link download
+            }
+            document.getElementById('login-form').reset();
+        }
+
+        function handleLogout() {
+            if(confirm("Bạn có chắc chắn muốn đăng xuất tài khoản?")) {
+                localStorage.removeItem('activeUser');
+                updateUserBarUI();
+                location.reload();
+            }
+        }
+
+        function handleUpload(e) {
+            e.preventDefault();
+            const currentSessionUser = localStorage.getItem('activeUser') || 'Ẩn danh';
+
+            if(bannedUsers.includes(currentSessionUser)){
+                alert("Tài khoản của bạn đã bị BAN! Hệ thống chặn mọi quyền upload tài nguyên của bạn.");
+                return;
+            }
+
+            const title = document.getElementById('up-title').value;
+            let img = document.getElementById('up-img').value.trim();
+            const link = document.getElementById('up-link').value;
+            const type = document.getElementById('up-type').value;
+
+            if(!img) {
+                img = `https://picsum.photos/400/250?random=${Date.now()}`;
+            }
+
+            const newCardItem = { id: Date.now(), title, img, link, type, author: currentSessionUser };
+            dbLinks.push(newCardItem);
+            localStorage.setItem('dbLinks', JSON.stringify(dbLinks));
+
+            alert("Đăng tải chia sẻ thành công lên trang chủ!");
+            closeModal('upload-modal');
+            document.getElementById('upload-form').reset();
+            renderMainCards();
+        }
+
+        function renderMainCards() {
+            const container = document.getElementById('items-container');
+            const cards = container.querySelectorAll('.card');
+            Array.from(cards).forEach((card, index) => { if(index >= 3) card.remove(); });
+
+            dbLinks.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-img-wrapper"><img src="${item.img}" alt="Tài nguyên"></div>
+                    <div class="card-body">
+                        <span class="card-tag">${item.type}</span>
+                        <div class="card-title" title="${item.title}">${item.title}</div>
+                        <div class="card-author"><i class="fas fa-user-circle"></i> Đăng bởi: ${item.author}</div>
+                        <button onclick="secureDownload('${item.link}')" class="download-btn" style="background: #6366f1; color: white;">
+                            Xem / Tải Xuống <i class="fas fa-external-link-alt"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // --- CODE ĐIỀU HÀNH ADMIN (GIỮ NGUYÊN BẢN HOÀN TOÀN CƠ CHẾ CŨ) ---
+        function openAdminDashboard() {
+            openModal('admin-modal');
+            renderAdminDashboardData();
+        }
+
+        function switchAdminTab(tabId) {
+            document.querySelectorAll('.admin-panel-section').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).style.display = 'block';
+            event.target.classList.add('active');
+        }
+
+        function renderAdminDashboardData() {
+            const linkBody = document.getElementById('admin-links-tbody');
+            linkBody.innerHTML = dbLinks.map(item => `
+                <tr>
+                    <td style="color:white; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title} (<span style="color:#10b981;">${item.author}</span>)</td>
+                    <td><a href="${item.link}" target="_blank" style="color:#38bdf8;">Xem liên kết</a></td>
+                    <td><button class="del-btn" onclick="adminDeletePost(${item.id})">Xóa Bài</button></td>
+                </tr>
+            `).join('');
+
+            const userBody = document.getElementById('admin-users-tbody');
+            userBody.innerHTML = dbUsers.map(u => {
+                const statusBan = bannedUsers.includes(u.username);
+                return `
+                    <tr>
+                        <td style="color:white; font-weight:600;">${u.username}</td>
+                        <td style="color:#94a3b8;">${u.password}</td>
+                        <td style="color:${statusBan ? '#ef4444' : '#10b981'}; font-weight:700;">${statusBan ? 'Đã Bị Ban Chặn' : 'Đang Hoạt Động'}</td>
+                        <td>
+                            ${statusBan ? `<button class="ban-btn" style="background:#10b981;" onclick="adminUnbanUser('${u.username}')">Gỡ Ban</button>`
+                                       : `<button class="ban-btn" onclick="adminBanUser('${u.username}')">BAN Nick</button>`}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function adminDeletePost(id) {
+            if(confirm("Xóa bài đăng vi phạm quy chuẩn này?")) {
+                dbLinks = dbLinks.filter(i => i.id !== id);
+                localStorage.setItem('dbLinks', JSON.stringify(dbLinks));
+                renderAdminDashboardData();
+                renderMainCards();
+            }
+        }
+
+        function adminBanUser(username) {
+            if(confirm(`Xác nhận cấm (BAN vĩnh viễn) tài khoản phá hoại: ${username}?`)) {
+                if(!bannedUsers.includes(username)) {
+                    bannedUsers.push(username);
+                    localStorage.setItem('bannedUsers', JSON.stringify(bannedUsers));
+                }
+                renderAdminDashboardData();
+            }
+        }
+
+        function adminUnbanUser(username) {
+            bannedUsers = bannedUsers.filter(u => u !== username);
+            localStorage.setItem('bannedUsers', JSON.stringify(bannedUsers));
+            renderAdminDashboardData();
+        }
+
+        function updateBannerText() {
+            const txt = document.getElementById('banner-text-input').value;
+            if(txt.trim() !== "") {
+                currentBannerText = txt;
+                localStorage.setItem('bannerText', currentBannerText);
+                document.getElementById('marquee-text').innerText = currentBannerText;
+                alert("Đã cập nhật văn bản chạy ngang thành công!");
+            }
+        }
+
+        // --- 🛡️ HỆ THỐNG CHẶN F12 - CHẶN CHUỘT PHẢI - CHẶN DEBUG CODE TUYỆT ĐỐI 🛡️ ---
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.onkeydown = function(e) {
+            if (e.keyCode == 123) { alert("Thông báo: Hệ thống bảo mật đã chặn không cho mở F12!"); return false; }
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { alert("Hành vi kiểm tra mã nguồn bị chặn!"); return false; }
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { alert("Hành vi kiểm tra mã nguồn bị chặn!"); return false; }
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { alert("Hành vi kiểm tra mã nguồn bị chặn!"); return false; }
+            if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { alert("Hành vi xem mã nguồn nguồn trang bị chặn!"); return false; }
+        };
+
+        setInterval(function() {
+            debugger;
+        }, 100);
+    </script>
+</body>
+</html>
