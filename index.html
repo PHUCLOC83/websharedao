@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-  
+        /* --- KHỞI TẠO BIẾN MÀU & ĐỊNH DẠNG CHUNG --- */
         :root {
             --primary: #6366f1;
             --primary-glow: rgba(99, 102, 241, 0.3);
@@ -31,7 +31,7 @@
             overflow-x: hidden;
         }
 
-      
+        /* --- 1. POPUP THÔNG BÁO BAN ĐẦU --- */
         #notification-overlay {
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -52,7 +52,7 @@
         .agree-btn { background: var(--primary); color: white; border: none; padding: 12px 35px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s; box-shadow: 0 8px 20px rgba(99,102,241,0.3); }
         .agree-btn:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 8px 25px rgba(99,102,241,0.5); }
 
-      
+        /* --- 2. GIAO DIỆN CHÍNH (HEADER) --- */
         header { padding: 40px 20px; text-align: center; position: relative; }
         .user-status-bar { position: absolute; top: 30px; left: 30px; display: flex; align-items: center; gap: 10px; }
         .login-btn { background: rgba(37, 99, 235, 0.15); border: 1px solid #3b82f6; padding: 10px 20px; border-radius: 14px; color: #60a5fa; cursor: pointer; font-weight: 700; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
@@ -66,6 +66,7 @@
         .header-sub { font-size: 16px; color: #94a3b8; margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 6px; }
         .firework-icon { display: inline-block; animation: bounce 1s infinite alternate; }
 
+        /* --- 3. BỐ CỤC CHÍNH (GRID & SIDEBAR) --- */
         .container { max-width: 1280px; margin: 40px auto; padding: 0 24px; display: grid; grid-template-columns: 1fr 340px; gap: 35px; margin-bottom: 140px; }
         @media (max-width: 900px) { .container { grid-template-columns: 1fr; } .user-status-bar { position: static; justify-content: center; margin-bottom: 20px; } }
 
@@ -87,15 +88,14 @@
         .card-title { font-size: 17px; font-weight: 700; line-height: 1.4; margin-bottom: 10px; color: #f1f5f9; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 48px;}
         .card-author { font-size: 13px; color: #64748b; margin-bottom: 20px; display: flex; align-items: center; gap: 6px; margin-top: auto;}
         
-       
         .download-btn { display: flex; width: 100%; border: none; outline: none; cursor: pointer; align-items: center; justify-content: center; gap: 8px; background: #ffffff; color: #0f172a; padding: 11px; border-radius: 12px; font-weight: 700; font-size: 14px; transition: 0.2s; }
         .download-btn:hover { background: var(--primary); color: #ffffff; }
 
-    
+        /* Sidebar Góc Sẻ Chia & Vùng hiển thị bình luận website */
         .sidebar-share { 
             background: linear-gradient(135deg, rgba(99, 102, 241, 0.07), rgba(244, 63, 94, 0.07));
             border-radius: 24px; padding: 30px; border: 1px solid var(--glass-border); text-align: center;
-            position: sticky; top: 30px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); margin-bottom: 25px;
         }
         .share-icon-circle { width: 64px; height: 64px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 26px; box-shadow: 0 0 25px rgba(99,102,241,0.4); }
         .share-btn { 
@@ -104,17 +104,28 @@
         }
         .share-btn:hover { background: var(--accent); color: #ffffff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(244,63,94,0.3); }
 
-      
+        /* Khung hiển thị danh sách đánh giá/bình luận ở sidebar */
+        .reviews-box {
+            background: rgba(15, 23, 42, 0.4); border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 20px; text-align: left; max-height: 400px; overflow-y: auto;
+        }
+        .review-title { font-size: 16px; font-weight: 800; color: #f1f5f9; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;}
+        .review-item { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); padding: 12px; border-radius: 14px; margin-bottom: 12px; }
+        .review-user { font-size: 13px; font-weight: 700; color: #a78bfa; display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .review-time { font-size: 11px; color: #64748b; font-weight: 400;}
+        .review-text { font-size: 13.5px; color: #cbd5e1; line-height: 1.4; word-break: break-word; }
+
+        /* --- 4. POPUP MODALS CHUNG (ĐĂNG NHẬP, UPLOAD, BÌNH LUẬN) --- */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 2000; }
         .modal-content { background: #0f172a; border: 1px solid var(--glass-border); padding: 32px; border-radius: 24px; width: 92%; max-width: 440px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .modal-content h3 { font-size: 22px; font-weight: 800; margin-bottom: 20px; text-align: center; color: #f8fafc;}
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; color: #94a3b8; margin-bottom: 6px; }
-        .form-group input, .form-group select { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); padding: 12px 16px; border-radius: 12px; color: white; outline: none; transition: 0.2s; font-size: 14px;}
-        .form-group input:focus, .form-group select:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); padding: 12px 16px; border-radius: 12px; color: white; outline: none; transition: 0.2s; font-size: 14px;}
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
         .submit-btn { width: 100%; padding: 13px; border-radius: 12px; border: none; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; }
 
-
+        /* --- 5. GIAO DIỆN FORM ADMIN (CƠ CẤU HOÀN THIỆN TÍNH NĂNG XÓA BL) --- */
         .admin-modal-content { max-width: 850px !important; width: 95%; background: #090d16 !important; border: 2px solid #a855f7 !important; max-height: 85vh; overflow-y: auto;}
         .admin-nav { display: flex; gap: 10px; border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 20px;}
         .admin-tab { background: #1e293b; border: none; color: white; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s;}
@@ -125,7 +136,7 @@
         .ban-btn { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: 600;}
         .del-btn { background: #f97316; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: 600;}
 
-  
+        /* --- 6. BANNER CHỮ CHẠY (FOOTER) --- */
         .marquee-footer {
             position: fixed; bottom: 0; left: 0; width: 100%; background: #090d16;
             border-top: 1px solid var(--glass-border); padding: 12px 0; z-index: 1000; overflow: hidden;
@@ -135,6 +146,7 @@
             animation: marquee 25s linear infinite; font-weight: 700; color: #38bdf8; font-size: 15px;
         }
 
+        /* --- 7. CÁC NÚT LIÊN HỆ ĐA NĂNG ĐANG CHUYỂN ĐỘNG (GÓC DƯỚI PHẢI) --- */
         .contact-wrapper { position: fixed; bottom: 65px; right: 25px; z-index: 1001; }
         .phone-main-btn {
             width: 54px; height: 54px; background: #10b981; border-radius: 16px; display: flex;
@@ -151,13 +163,29 @@
         }
         .fb-btn { background: #1877f2; } .zalo-btn { background: #0068ff; font-weight: 800; font-size: 13px !important;} .tt-btn { background: #000000; border: 1px solid rgba(255,255,255,0.2);}
 
-       
+        /* --- 8. ICON TẠO BÀI VIẾT BÌNH LUẬN CHUYỂN ĐỘNG (GÓC DƯỚI TRÁI NEW) --- */
+        .comment-trigger-wrapper { position: fixed; bottom: 65px; left: 25px; z-index: 1001; display: flex; align-items: center; gap: 12px; }
+        .comment-main-btn {
+            width: 54px; height: 54px; background: #3b82f6; border-radius: 16px; display: flex;
+            justify-content: center; align-items: center; color: white; font-size: 22px; cursor: pointer;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4); animation: floatBtn 1.2s infinite alternate;
+        }
+        .comment-floating-text {
+            background: rgba(15, 23, 42, 0.85); border: 1px solid var(--glass-border); padding: 8px 14px;
+            border-radius: 12px; font-size: 12.5px; font-weight: 700; color: #38bdf8; max-width: 200px;
+            pointer-events: none; backdrop-filter: blur(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: slideInLeft 0.3s forwards; white-space: normal; line-height: 1.3;
+        }
+
+        /* --- CÁC HIỆU ỨNG CHUYỂN ĐỘNG (ANIMATIONS) --- */
         @keyframes scaleUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes ring { 0%, 100% { transform: rotate(0); } 10%, 30% { transform: rotate(12deg); } 20%, 40% { transform: rotate(-12deg); } 50% { transform: rotate(0); } }
         @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-6px); } }
         @keyframes marquee { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
         @keyframes shake { from { transform: rotate(-8deg) scale(1); } to { transform: rotate(8deg) scale(1.05); } }
+        @keyframes floatBtn { from { transform: translateY(0); } to { transform: translateY(-6px); } }
         @keyframes slideInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-15px); } to { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
 <body>
@@ -193,30 +221,30 @@
         <main class="main-content">
             <div class="grid-items" id="items-container">
                 <div class="card">
-                    <div class="card-img-wrapper"><img src="https://vectorseek.com/wp-content/uploads/2023/07/capcut-png-icon.png" alt="Mẫu 1"></div>
+                    <div class="card-img-wrapper"><img src="https://i.pinimg.com/736x/76/01/d7/7601d78b73e3d81080fb8b7ca1e56122.jpg" alt="Mẫu 1"></div>
                     <div class="card-body">
-                        <span class="card-tag">Links</span>
-                        <div class="card-title">CAPCUT FREE CHO PC</div>
+                        <span class="card-tag">Links App</span>
+                        <div class="card-title">CapCut Free Full cho Pc</div>
                         <div class="card-author"><i class="fas fa-user-shield"></i> Admin Phuc Loc</div>
-                        <button onclick="secureDownload('https://drive.google.com/file/d/1Av8ktGM7OiT24VDjvA06d7uLQpnzHbAt/view')" class="download-btn">Lấy Link Tại Đây <i class="fas fa-download"></i></button>
+                        <button onclick="secureDownload('https://drive.google.com/file/d/1Av8ktGM7OiT24VDjvA06d7uLQpnzHbAt/view')" class="download-btn">Tải Ngay <i class="fas fa-download"></i></button>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-img-wrapper"><img src="https://tse3.mm.bing.net/th/id/OIP.MVREUvZlSNqn3YAO-qbgUQHaEJ?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Mẫu 2"></div>
+                    <div class="card-img-wrapper"><img src="https://cdn.sforum.vn/sforum/wp-content/uploads/2021/10/azotaaa111.jpg" alt="Mẫu 2"></div>
                     <div class="card-body">
                         <span class="card-tag">Links</span>
-                        <div class="card-title">Link Azota Câu hỏi CNXHKH Cho Sv Đại Học</div>
+                        <div class="card-title">Links Azota CNXHKH Cho Sv Đại Học </div>
                         <div class="card-author"><i class="fas fa-user-shield"></i> Admin Phuc Loc</div>
-                        <button onclick="secureDownload('https://docs.google.com/document/u/0/d/1zRhYYISloDGwkG7O4O0GB_tghs0pUAYd/mobilebasic?fbclid=IwQ0xDSwL3zIJleHRuA2FlbQIxMAABHtYhb2r0LpDJgVroLBnYUdeaIBi1e8-TNeepEVSmA_UfLQpKHLZakcMGVYv0_aem_kkR0b9BwYH8w3-L9cdxqdw&pli=1')" class="download-btn">Lấy Link Tại Đây <i class="fas fa-folder-open"></i></button>
+                        <button onclick="secureDownload('https://docs.google.com/document/u/0/d/1zRhYYISloDGwkG7O4O0GB_tghs0pUAYd/mobilebasic?fbclid=IwQ0xDSwL3zIJleHRuA2FlbQIxMAABHtYhb2r0LpDJgVroLBnYUdeaIBi1e8-TNeepEVSmA_UfLQpKHLZakcMGVYv0_aem_kkR0b9BwYH8w3-L9cdxqdw&pli=1')" class="download-btn">Mở Links Ngay <i class="fas fa-folder-open"></i></button>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-img-wrapper"><img src="https://cdn.discordapp.com/attachments/1504830965535740018/1525117794939703488/image.png?ex=6a523821&is=6a50e6a1&hm=e8e8ebdc5fb543d47d0aa36079a049ecfdd3154351e3a38daca9a820b308facf" alt="Mẫu 3"></div>
+                    <div class="card-img-wrapper"><img src="https://cdn.discordapp.com/attachments/1504830965535740018/1525117794939703488/image.png?ex=6a523821&is=6a50e6a1&hm=e8e8ebdc5fb543d47d0aa36079a049ecfdd3154351e3a38daca9a820b308facf&" alt="Mẫu 3"></div>
                     <div class="card-body">
                         <span class="card-tag">WEBSITE</span>
-                        <div class="card-title">WEB CHECK ĐIỂM QNU</div>
+                        <div class="card-title">WEBSITE CHECK ĐIỂM QNU NHANH CHO SV QNU</div>
                         <div class="card-author"><i class="fas fa-user-shield"></i> Admin Phuc Loc</div>
-                        <button onclick="secureDownload('https://phucloc83.github.io/checkdiemuniversity/')" class="download-btn">DEMO TAM CHUA DUNG DUOC <i class="fas fa-file-code"></i></button>
+                        <button onclick="secureDownload('https://phucloc83.github.io/checkdiemuniversity/')" class="download-btn">WEB DEMO ĐANG BẢO TRÌ <i class="fas fa-file-code"></i></button>
                     </div>
                 </div>
             </div>
@@ -230,6 +258,12 @@
                 <button class="share-btn" style="background: #ef4444; color: white;" onclick="secureOpenUpload()">
                     Góc Sẻ Chia <i class="fas fa-paper-plane"></i>
                 </button>
+            </div>
+
+            <div class="reviews-box">
+                <div class="review-title"><i class="fas fa-comments" style="color: #3b82f6;"></i> Đánh giá Website</div>
+                <div id="reviews-list-container">
+                    </div>
             </div>
         </aside>
     </div>
@@ -283,6 +317,20 @@
         </div>
     </div>
 
+    <div id="comment-modal" class="modal" onclick="closeModalOnOutsideClick(event, 'comment-modal')">
+        <div class="modal-content">
+            <button class="close-noti-btn" onclick="closeModal('comment-modal')"><i class="fas fa-times"></i></button>
+            <h3>Chia Sẻ Suy Nghĩ Về Website</h3>
+            <form id="comment-form" onsubmit="handleSubComment(event)">
+                <div class="form-group">
+                    <label>Nội dung suy nghĩ / bình luận của bạn</label>
+                    <textarea id="comment-text-content" rows="4" required placeholder="Website này xịn quá admin ơi..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn" style="background: #3b82f6; color: white;">Gửi Đánh Giá Ngay</button>
+            </form>
+        </div>
+    </div>
+
     <div id="admin-modal" class="modal">
         <div class="modal-content admin-modal-content">
             <button class="close-noti-btn" onclick="closeModal('admin-modal')"><i class="fas fa-times"></i></button>
@@ -291,6 +339,7 @@
             <div class="admin-nav">
                 <button class="admin-tab active" onclick="switchAdminTab('tab-links')">Quản Lý Bài Đăng</button>
                 <button class="admin-tab" onclick="switchAdminTab('tab-users')">Quản Lý Thành Viên</button>
+                <button class="admin-tab" onclick="switchAdminTab('tab-comments')">Quản Lý Bình Luận</button>
                 <button class="admin-tab" onclick="switchAdminTab('tab-settings')">Cấu Hình Banner</button>
             </div>
 
@@ -321,6 +370,20 @@
                 </table>
             </div>
 
+            <div id="tab-comments" class="admin-panel-section" style="display:none;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Người Bình Luận</th>
+                            <th>Nội Dung Suy Nghĩ</th>
+                            <th>Thời Gian</th>
+                            <th>Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-comments-tbody"></tbody>
+                </table>
+            </div>
+
             <div id="tab-settings" class="admin-panel-section" style="display:none;">
                 <div class="form-group" style="margin-top:15px;">
                     <label>Văn bản banner chữ chạy ngang qua liên tục</label>
@@ -335,9 +398,18 @@
         <div class="marquee-content" id="marquee-text">Chào mừng tới với WEBSITE SHARE DẠO CỦA PHÚC LỘC > CẢM ƠN MỌI NGƯỜI.</div>
     </div>
 
+    <div class="comment-trigger-wrapper" onclick="secureOpenComment()">
+        <div class="comment-main-btn">
+            <i class="fas fa-pen-nib"></i>
+        </div>
+        <div class="comment-floating-text">
+            Tạo bài viết và chia sẻ suy nghĩ về website
+        </div>
+    </div>
+
     <div class="contact-wrapper">
         <div class="sub-contact-icons" id="sub-contacts">
-            <a href="https://www.facebook.com/share/1HcawLrZBp/?mibextid=wwXIfr" target="_blank" class="fb-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.tiktok.com/@phloc_?_r=1&_t=ZS-97ub1WCRx5z" target="_blank" class="fb-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>
             <a href="https://zalo.me/0974377827" target="_blank" class="zalo-btn" title="Zalo">Zalo</a>
             <a href="https://www.tiktok.com/@phloc_?_r=1&_t=ZS-97ub1WCRx5z" target="_blank" class="tt-btn" title="TikTok"><i class="fab fa-tiktok"></i></a>
         </div>
@@ -351,12 +423,26 @@
         let dbUsers = JSON.parse(localStorage.getItem('dbUsers')) || [];
         let bannedUsers = JSON.parse(localStorage.getItem('bannedUsers')) || [];
         let currentBannerText = localStorage.getItem('bannerText') || "Chào mừng tới với WEBSITE SHARE DẠO CỦA PHÚC LỘC > CẢM ƠN MỌI NGƯỜI.";
+        
+        // Mảng lưu trữ danh sách bình luận đánh giá website
+        let dbComments = JSON.parse(localStorage.getItem('dbComments'));
+
+        // CLONE SẴN 3 BÀI VIẾT ĐÁNH GIÁ MẪU NẾU HỆ THỐNG CHƯA CÓ DỮ LIỆU
+        if (!dbComments || dbComments.length === 0) {
+            dbComments = [
+                { id: 1001, user: "An Nguyen Spdlk48", text: "Anh đúng là anh của em. làm web để phục vụ học tập quả là anh của em.", time: "10-07-2026 14:20" },
+                { id: 1002, user: "Van Lai Spvank48", text: "Rất tuyệt vời và hữu ích đấy anh Lộc ơi em học văn nè thích lắm", time: "10-07-2026 15:45" },
+                { id: 1003, user: "Kpa thiet spdlk48", text: "Tuyet voi Loc", time: "10-07-2026 18:10" }
+            ];
+            localStorage.setItem('dbComments', JSON.stringify(dbComments));
+        }
 
         window.onload = function() {
             document.getElementById('marquee-text').innerText = currentBannerText;
             document.getElementById('banner-text-input').value = currentBannerText;
             updateUserBarUI(); 
             renderMainCards();
+            renderReviews(); // Hiển thị bình luận ra sidebar góc phải
         };
 
         function closeNotification() { document.getElementById('notification-overlay').style.display = 'none'; }
@@ -369,7 +455,6 @@
             menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
         }
 
-        // Cập nhật giao diện thanh tài khoản đăng nhập
         function updateUserBarUI() {
             const loggedUser = localStorage.getItem('activeUser');
             const btnLogin = document.getElementById('btn-login-trigger');
@@ -386,19 +471,17 @@
             }
         }
 
-
+        // ================= SECURITY & DOWNLOAD & UPLOAD SYSTEM =================
         function secureDownload(linkUrl) {
             const isLogged = localStorage.getItem('activeUser');
             if (!isLogged) {
                 alert("Hệ thống bảo mật: Bạn cần phải ĐĂNG NHẬP tài khoản trước thì mới có quyền tải tài nguyên này xuống!");
-                openModal('login-modal'); // Tự động bật bảng đăng nhập lên cho khách
+                openModal('login-modal');
                 return;
             }
-            // Nếu đã đăng nhập thành công thì cho phép tải/mở liên kết bình thường ở tab mới
             window.open(linkUrl, '_blank');
         }
 
-        // Hàm bảo mật chặn người dùng mở form upload chia sẻ bài nếu chưa đăng nhập
         function secureOpenUpload() {
             const isLogged = localStorage.getItem('activeUser');
             if (!isLogged) {
@@ -406,10 +489,65 @@
                 openModal('login-modal');
                 return;
             }
-            openModal('upload-modal'); // Đã đăng nhập thì cho phép mở form điền bài đăng
+            openModal('upload-modal');
         }
 
-  
+        // CHẶN KHÁCH VÃNG LAI BÌNH LUẬN NẾU CHƯA ĐĂNG NHẬP
+        function secureOpenComment() {
+            const isLogged = localStorage.getItem('activeUser');
+            if (!isLogged) {
+                alert("Hệ thống bảo mật: Vui lòng ĐĂNG NHẬP tài khoản trước mới có thể tạo bài viết và chia sẻ bình luận!");
+                openModal('login-modal');
+                return;
+            }
+            openModal('comment-modal');
+        }
+
+        // Xử lý gửi bình luận lên hệ thống công cộng
+        function handleSubComment(e) {
+            e.preventDefault();
+            const currentSessionUser = localStorage.getItem('activeUser') || 'Thành viên';
+
+            if(bannedUsers.includes(currentSessionUser)){
+                alert("Tài khoản của bạn đang trong trạng thái bị BAN! Không thể gửi bình luận.");
+                return;
+            }
+
+            const text = document.getElementById('comment-text-content').value.trim();
+            
+            // Định dạng thời gian thực tế ngày giờ phút giây
+            const now = new Date();
+            const timeStr = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth()+1).padStart(2, '0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            const newComment = { id: Date.now(), user: currentSessionUser, text: text, time: timeStr };
+            dbComments.unshift(newComment); // Đẩy bình luận mới lên vị trí đầu tiên
+            localStorage.setItem('dbComments', JSON.stringify(dbComments));
+
+            alert("Gửi chia sẻ suy nghĩ/bình luận đánh giá của bạn thành công!");
+            closeModal('comment-modal');
+            document.getElementById('comment-form').reset();
+            renderReviews();
+        }
+
+        // Render toàn bộ danh sách bình luận ra màn hình sidebar góc phải
+        function renderReviews() {
+            const container = document.getElementById('reviews-list-container');
+            if(dbComments.length === 0) {
+                container.innerHTML = `<div style="color:#64748b; font-size:13px; text-align:center; padding:10px 0;">Chưa có suy nghĩ nào được chia sẻ...</div>`;
+                return;
+            }
+            container.innerHTML = dbComments.map(item => `
+                <div class="review-item">
+                    <div class="review-user">
+                        <span>@${item.user}</span>
+                        <span class="review-time">${item.time}</span>
+                    </div>
+                    <div class="review-text">${item.text}</div>
+                </div>
+            `).join('');
+        }
+
+        // =========================================================================
 
         function handleLogin(e) {
             e.preventDefault();
@@ -433,7 +571,7 @@
                 alert(`Đăng nhập thành công! Chào thành viên: ${user}`);
                 closeModal('login-modal');
                 updateUserBarUI();
-                renderMainCards(); // Load lại nút bấm để cập nhật link download
+                renderMainCards();
             }
             document.getElementById('login-form').reset();
         }
@@ -497,7 +635,7 @@
             });
         }
 
-        
+        // --- PANEL ĐIỀU HÀNH ADMIN CHUYÊN NGHIỆP ---
         function openAdminDashboard() {
             openModal('admin-modal');
             renderAdminDashboardData();
@@ -511,6 +649,7 @@
         }
 
         function renderAdminDashboardData() {
+            // Tab 1: Bài đăng chia sẻ
             const linkBody = document.getElementById('admin-links-tbody');
             linkBody.innerHTML = dbLinks.map(item => `
                 <tr>
@@ -520,6 +659,7 @@
                 </tr>
             `).join('');
 
+            // Tab 2: Quản lý thành viên đăng nhập
             const userBody = document.getElementById('admin-users-tbody');
             userBody.innerHTML = dbUsers.map(u => {
                 const statusBan = bannedUsers.includes(u.username);
@@ -535,6 +675,17 @@
                     </tr>
                 `;
             }).join('');
+
+            // Tab 3: XÓA BÌNH LUẬN TIÊU CỰC CỦA ADMIN
+            const commentBody = document.getElementById('admin-comments-tbody');
+            commentBody.innerHTML = dbComments.map(c => `
+                <tr>
+                    <td style="color:#10b981; font-weight:700;">@${c.user}</td>
+                    <td style="color:white; max-width:280px; word-break:break-all;">${c.text}</td>
+                    <td style="color:#64748b; font-size:12px;">${c.time}</td>
+                    <td><button class="del-btn" style="background:#ef4444;" onclick="adminDeleteComment(${c.id})">Xóa Bình Luận</button></td>
+                </tr>
+            `).join('');
         }
 
         function adminDeletePost(id) {
@@ -543,6 +694,16 @@
                 localStorage.setItem('dbLinks', JSON.stringify(dbLinks));
                 renderAdminDashboardData();
                 renderMainCards();
+            }
+        }
+
+        // HÀM ADMIN XÓA BÌNH LUẬN TIÊU CỰC
+        function adminDeleteComment(id) {
+            if(confirm("Bạn có chắc muốn xóa vĩnh viễn bình luận tiêu cực này khỏi website không?")) {
+                dbComments = dbComments.filter(c => c.id !== id);
+                localStorage.setItem('dbComments', JSON.stringify(dbComments));
+                renderAdminDashboardData(); // Làm mới giao diện admin panel
+                renderReviews(); // Cập nhật lại khung chat cộng đồng ngoài trang chủ
             }
         }
 
@@ -572,7 +733,7 @@
             }
         }
 
-      
+        // --- 🛡️ HỆ THỐNG BẢO MẬT CHỐNG F12 VÀ XEM SOURCE CODE 🛡️ ---
         document.addEventListener('contextmenu', event => event.preventDefault());
         document.onkeydown = function(e) {
             if (e.keyCode == 123) { alert("Thông báo: Hệ thống bảo mật đã chặn không cho mở F12!"); return false; }
